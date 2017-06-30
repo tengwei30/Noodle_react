@@ -16,13 +16,12 @@ class List extends Component {
       <ul style={{listStyle:'none'}}>
         {
           data.map((str,index) => {
-            console.log(str)
-            if(str.logoImageUrl != ''){
+            if(str.images[0] != ''){
               return <li key={index}>
                 <a href={str.linkUrl}>
                   <dl style={styles.dlContent}>
                     <dd style={styles.flex_1}>
-                      <img style={{width:130,height:90}} src={str.logoImageUrl} alt={str.title}/>
+                      <img style={{width:130,height:90}} src={str.images[0]} alt={str.title}/>
                     </dd>
                     <dd style={styles.flex_2}>
                       <p>{str.title}</p>

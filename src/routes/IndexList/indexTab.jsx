@@ -1,4 +1,4 @@
-import React, { Component,PureComponent,PropTypes } from 'react';
+﻿import React, { Component,PureComponent,PropTypes } from 'react';
 import { Tabs, WhiteSpace,ListView,Toast} from 'antd-mobile';
 import { routerRedux } from 'dva/router';
 import { connect } from 'dva';
@@ -10,14 +10,16 @@ import {width,height} from '../common/style';
 
 let keyArticleList = md5('api/article'+(moment().format('YYYY-MM-DD HH')));
 let secretList = JSON.stringify({"account": "inews", "key":`${keyArticleList}`});
-
+let devicenum = localStorage.getItem('devicenum')
 const loadMoreLimitNum = 10;
 
 const defaultStyle ={
   width: "100%",
   textAlign: "center",
-  fontSize: "16px",
-  lineHeight: "1.5"
+  fontSize: "14px",
+  lineHeight: "1.5",
+  paddingTop:"12px",
+  color:'#ccc'
 }
 
 class HeadNode extends PureComponent{
@@ -54,8 +56,8 @@ class HeadNode extends PureComponent{
   }
 }
 
-class FooterNode extends PureComponent{
 
+class FooterNode extends PureComponent{
   static propTypes = {
     loaderState: PropTypes.string.isRequired,
     hasMore: PropTypes.bool.isRequired
@@ -73,7 +75,12 @@ class FooterNode extends PureComponent{
       } = this.props
     let content = ""
     if(loaderState == STATS.loading){
-      content = "加载中"
+      return(
+        <div style={defaultStyle}>
+          <img src={require('../../assets/state/fail@2x.png')} alt="" style={{width:32,height:40}} />
+          <span>正在加載喔~</span>
+        </div>
+      )
     } else if(hasMore === false){
       content = "没有更多"
     }
@@ -98,7 +105,8 @@ class indexTab extends Component {
       hasMore: true,
       data: [],
       action: STATS.init,
-      index: loadMoreLimitNum
+      index: loadMoreLimitNum,
+      newsLength:''
     }
   }
 
@@ -121,12 +129,14 @@ class indexTab extends Component {
         type: 0,
         pageSize: 10,
         dt : 2,
-        action: 1
+        action: 1,
+        devicenum:devicenum
       })
     }).then((res) => res.json()).then((res) => {
-      console.log(res)
+      console.log(res.result.news.length)
       this.setState({
-        data: res.result.news
+        data: res.result.news,
+        newsLength:res.result.news.length
       })
       this.props.dispatch({
         type: 'indexList/detailData',
@@ -137,22 +147,17 @@ class indexTab extends Component {
         this.setState({
           showT : true
         })
-      },1100)
+      },1900)
     }).then(() => {
       setTimeout(() => {
         this.setState({
           showT : false
         })
-      },2500)
+      },2900)
     }).catch((err) => {
       console.log(err)
     })
   }
-
-  componentWillReceiveProps(nextProp){
-    console.log(this.props.indexList)
-  }
-
 
   handleAction = (action) => {
     console.info(action, this.state.action,action === this.state.action);
@@ -186,6 +191,7 @@ class indexTab extends Component {
     if(STATS.loading === this.state.action){
       return false
     }
+    console.log(this.state.channelid)
     setTimeout(()=>{
       if(this.state.index === 0){
         this.setState({
@@ -205,7 +211,8 @@ class indexTab extends Component {
             type: 0,
             pageSize: 10,
             dt : 2,
-            action: 1
+            action: 1,
+            devicenum:devicenum
           })
         }).then((res) => res.json()).then((res) => {
           console.log(res)
@@ -219,17 +226,18 @@ class indexTab extends Component {
             payload: [...this.state.data,...res.result.news],
           });
         }).then(() => {
+          console.log(this.state.showT)
           setTimeout(() => {
             this.setState({
               showT : true
             })
-          },1100)
+          },1900)
         }).then(() => {
           setTimeout(() => {
             this.setState({
               showT : false
             })
-          },2500)
+          },2900)
         }).catch((err) => {
           console.log(err)
         })
@@ -240,7 +248,7 @@ class indexTab extends Component {
     })
   }
 
-
+  //跳转到详情页
   _routerDetail(index) {
     localStorage.setItem('detailid',index)
     this.props.dispatch(
@@ -250,14 +258,23 @@ class indexTab extends Component {
 
   //Tab 切换重新调取
   ButtonClick(key) {
-    this.getListData(key)
+    this.getListData(key);
+    this.setState({
+      channelid:key
+    })
   }
 
   _renderShow() {
     if(this.state.showT == true){
-      return(
-        <p style={styles.more}>更新了10条内容</p>
-      )
+      if(this.state.newsLength != 0){
+        return(
+          <p style={styles.more}>更新了{this.state.newsLength}条内容</p>
+        )
+      }else{
+        return(
+          <p style={styles.more}>暂無更新推送</p>
+        )
+      }
     }else{
       return(
         <p></p>
@@ -285,10 +302,10 @@ class indexTab extends Component {
           <ul className="test-ul">
             {
               data.map( (str, index )=>{
-                if(str.logoImageUrl != ''){
+                if(str.images[0] != ''){
                   return <li key={index}>
                     <div style={styles.news} onClick = {() => this._routerDetail(index)}>
-                      <img src={str.logoImageUrl} style={styles.imgStyle} />
+                      <img src={str.images[0]} style={styles.imgStyle} />
                       <p style={styles.newsTitle}>{str.title}</p>
                       <p style={{fontSize:12,color:'#ccc',borderWidth:1}}><span style={{color:'#03D7FF'}}>{str.source}</span> | {str.publishTime}</p>
                     </div>

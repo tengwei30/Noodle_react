@@ -4,14 +4,11 @@ import { routerRedux } from 'dva/router';
 import { connect } from 'dva';
 import moment from 'moment';
 import Request from '../common/fetch'
+import {width,height} from '../common/style';
 
 const TabPane = Tabs.TabPane;
 let keyArticleTab = md5('api/article/channel'+(moment().format('YYYY-MM-DD HH')));
 let secretTab = JSON.stringify({"account": "inews", "key":`${keyArticleTab}`});
-
-//屏幕的有效宽高
-const width = window.screen.availWidth;
-const height = window.screen.availHeight;
 
 
 class TabButton extends Component {
@@ -56,9 +53,15 @@ class TabButton extends Component {
     return result
   }
 
+  _getMore() {
+    this.props.dispatch(
+      routerRedux.push('/moreChannel')
+    )
+  }
+
   render() {
     return(
-      <div style={{position:'fixed',top:44,zIndex:999,backgroundColor:'#fff'}}>
+      <div style={{position:'fixed',top:44,zIndex:999,backgroundColor:'#fff',width:(width/7)*6}}>
         <Tabs defaultActiveKey="1"
               pageSize={7}
               onTabClick={(key) => {this._handleTabClick(key)}}
@@ -66,8 +69,25 @@ class TabButton extends Component {
           >
           {this._renderList()}
         </Tabs>
+        <p style={styles.moreChannel} onClick={() => this._getMore()}>
+          <img style={{width:26,height:26,marginTop:8,marginLeft:14}} src={require('../../assets/list/addchannel@2x.png')} alt=""/>
+        </p>
       </div>
     )
+  }
+}
+
+const styles = {
+  moreChannel:{
+    position:'absolute',
+    top:0,
+    right:-width/7,
+    zIndex:9999,
+    width:width/7,
+    height:42,
+    backgroundColor:'#fff',
+    alignItems:'center',
+    justifyContent:'center'
   }
 }
 

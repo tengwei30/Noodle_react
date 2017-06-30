@@ -27,6 +27,7 @@ class Search extends Component {
       secret:secretSearch,
       keywords: value
     },((res) => {
+      console.log(res)
       this.setState({
         dataList: res.result.news
       })

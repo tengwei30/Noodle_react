@@ -1,3 +1,4 @@
+
 const state = () => {
   return {
     //datail: [],
@@ -27,14 +28,14 @@ export default {
     },
     save(state, action) {
       return { ...state, ...action.payload };
-    },
-    detailData(state, { payload }) {
-      sessionStorage.setItem("detaiList", JSON.stringify(payload));
-      return { ...state, detail: { ...payload }};
-    },
-    TabData(state, { payload }) {
-      return { ...state, detail: { ...payload }};
-    }
+},
+detailData(state, { payload }) {
+  sessionStorage.setItem("detaiList", JSON.stringify(payload));
+  return { ...state, detail: { ...payload }};
+},
+TabData(state, { payload }) {
+  return { ...state, detail: { ...payload }};
+}
 },
 
 };

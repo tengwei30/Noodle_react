@@ -4,11 +4,12 @@ import { Tabs, WhiteSpace,ListView,Toast,List} from 'antd-mobile';
 import {connect} from 'dva';
 import md5 from 'md5';
 import moment from 'moment';
+import $ from 'jquery';
 import stylesImg from './../header/header.less';
 import ListV from './../common/list';
 import Request from '../common/fetch'
 import {width,height} from '../common/style';
-
+import stylesH from '../IndexPage.less';
 
 const data = {
   newsID: '',
@@ -16,7 +17,7 @@ const data = {
   linkUrl: ''
 }
 
-let keyArticleDetail = md5('api/article/detail'+(moment().format('YYYY-MM-DD HH')));
+let keyArticleDetail = md5('api/article/spage'+(moment().format('YYYY-MM-DD HH')));
 let secretDetail = JSON.stringify({"account": "inews", "key":`${keyArticleDetail}`});
 let devicenum = localStorage.getItem('devicenum')
 class Detail extends Component {
@@ -29,15 +30,13 @@ class Detail extends Component {
     if(this.props.indexList.detail){
       data.newsID = this.props.indexList.detail[this.props.params.id].id;
       data.channelid =this.props.indexList.detail[this.props.params.id].channelid;
-      data.linkUrl = this.props.indexList.detail[this.props.params.id].linkUrl;
     }else{
       data.newsID = dataList[datailid].id
       data.channelid =dataList[datailid].channelid
-      data.linkUrl = dataList[datailid].linkUrl
     }
 
     this.state = ({
-      linkUrl: data.linkUrl,
+      linkUrl: '',
       newsLength: '',
       dataList:[]
     })
@@ -45,42 +44,29 @@ class Detail extends Component {
   }
 
   componentDidMount() {
-
-    Request('/api/article/detail',{
+    Request('/api/article/spage',{
       secret:secretDetail,
       newsID: data.newsID,
       channelID: data.channelid,
       devicenum: devicenum,
     },((res) => {
+      console.log(res)
+
       this.setState({
         newsLength: res.result.news.length,
-        dataList: res.result.news
+        dataList: res.result.news,
+        linkUrl: res.result.detail.linkUrl
       })
     }))
 
-
-    const iframe = document.getElementById('frame_content');
-    setTimeout(() => {
-      const ifr = document.getElementById('frame_content').contentWindow
-    },500)
-
   }
 
-  iFrameHeight() {
-    var ifm= document.getElementById("iframepage");
-    var subWeb = document.frames ? document.frames["iframepage"].document : ifm.contentDocument;
-    if(ifm != null && subWeb != null) {
-      ifm.height = subWeb.body.scrollHeight;
-      ifm.width = subWeb.body.scrollWidth;
-    }
-  }
 
 	render() {
 		return(
 			<div style={styles.container}>
-        <div id="url_Content">
-          <iframe id="iframepage" src={this.state.linkUrl} scrolling="no" frameBorder="0" onLoad={this.iFrameHeight} style={{width:width-30,border:'none'}}>
-          </iframe>
+        <div className = {stylesH.h2style}>
+          <div dangerouslySetInnerHTML={{__html: this.state.linkUrl}} />
         </div>
         <p className={stylesImg.recommend}></p>
         <div style={{ display: 'flex',border:'none',height:'auto',padding:15}}>
