@@ -16,7 +16,7 @@ class List extends Component {
       <ul style={{listStyle:'none'}}>
         {
           data.map((str,index) => {
-            if(str.images[0] != ''){
+            if(str.images.length != 0){
               return <li key={index}>
                 <a href={str.linkUrl}>
                   <dl style={styles.dlContent}>
@@ -24,7 +24,7 @@ class List extends Component {
                       <img style={{width:130,height:90}} src={str.images[0]} alt={str.title}/>
                     </dd>
                     <dd style={styles.flex_2}>
-                      <p>{str.title}</p>
+                      <p style={styles.titleStyle}>{str.title}</p>
                       <p style={{position:'absolute',bottom:0,color:'#A3A3A3',fontSize:12}}>{str.publishTime}</p>
                     </dd>
                   </dl>
@@ -35,8 +35,8 @@ class List extends Component {
                 <a href={str.linkUrl}>
                   <dl style={styles.dlContent}>
                     <dd style={styles.flex_3}>
-                      <p>{str.title}</p>
-                      <p style={{position:'absolute',bottom:0,color:'#A3A3A3',fontSize:12}}>{str.publishTime}</p>
+                      <p style={styles.titleStyle}>{str.title}</p>
+                      <p style={{bottom:0,color:'#A3A3A3',fontSize:12}}>{str.publishTime}</p>
                     </dd>
                   </dl>
                 </a>
@@ -72,6 +72,12 @@ const styles = {
     fontSize:17,
     letterSpacing:1,
     position:'relative',
+  },
+  titleStyle:{
+    fontSize:17,
+    color:'#000',
+    letterSpacing:1,
+    minHeight:55
   }
 }
 

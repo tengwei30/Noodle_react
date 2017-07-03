@@ -133,7 +133,6 @@ class indexTab extends Component {
         devicenum:devicenum
       })
     }).then((res) => res.json()).then((res) => {
-      console.log(res.result.news.length)
       this.setState({
         data: res.result.news,
         newsLength:res.result.news.length
@@ -215,7 +214,6 @@ class indexTab extends Component {
             devicenum:devicenum
           })
         }).then((res) => res.json()).then((res) => {
-          console.log(res)
           this.setState({
             data: [...this.state.data,...res.result.news],
               action: STATS.reset,
